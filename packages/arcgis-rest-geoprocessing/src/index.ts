@@ -3,12 +3,15 @@ import { request, cleanUrl, ApiKeyManager } from "@esri/arcgis-rest-request";
 
 import mitt from "mitt";
 
-interface IRequestParamsProps {
+interface IJobOptions {
+  id: string;
   url: string;
   params?: any;
   startMonitoring: boolean;
   pollingRate: number;
 }
+
+type ISubmitJobOptions = Omit<IJobOptions, "id">;
 
 export class GeoprocessingJob {
   pollingRate: number;
