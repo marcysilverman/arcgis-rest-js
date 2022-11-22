@@ -81,6 +81,20 @@ For a specific package
 - [`@esri/arcgis-rest-geocoding`](./packages/arcgis-rest-geocoding) - Geocoding wrapper for `@esri/arcgis-rest-js`
 - [`@esri/arcgis-rest-routing`](./packages/arcgis-rest-routing) - Routing and directions wrapper for `@esri/arcgis-rest-js`.
 
+#### How to add a new package
+- In `/packages`, create a new folder with your desired new package name
+- Each package will have it’s own local `package.json` and tsconfig.json if using typescript
+- Create a folder in your new package called src in which your code will be defined
+- After creating your package, go to the root `package.json`, under workspaces array add the title of your package
+- Run `npm build:esm`
+- Go into `/demos`, create a new folder and title what you want to call your demo
+- Add a local package.json in which you will add your new package as a `dependency, name, version, - description, license, type, main, scripts, and author`. Feel free to add any extra properties as well. 
+- Add a `.gitignore` in the root level of your demo folder that ignore `node_modules`. Be sure to ignore an `env` file as well if your demo is using any personal keys or tokens.
+- Run `Npm install` within the `demos` level, also be sure to create a start script that refers to `node ../../scripts/run-demo-server.js` in demo `package.json`x`.
+- In your index file, import any methods or variables from your new package as well as another package in the `/packages` repo
+- To run your demo be sure that you running your start script in your demo directory and run `npm run start`
+- Add a readme describing your demo
+
 ### Issues
 
 If something isn't working the way you expected, please take a look at [previously logged issues](https://github.com/Esri/arcgis-rest-js/issues) first. Have you found a new bug? Want to request a new feature? We'd [**love**](https://github.com/Esri/arcgis-rest-js/issues/new) to hear from you.

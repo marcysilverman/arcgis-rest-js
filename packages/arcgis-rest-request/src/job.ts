@@ -1,7 +1,17 @@
+/* Copyright (c) 2022-2023 Environmental Systems Research Institute, Inc.
+ * Apache-2.0 */
 import { request } from "./request.js";
 import { cleanUrl } from "./utils/clean-url.js";
 import { IRequestOptions, JOB_STATUSES } from "./index.js";
 import mitt from "mitt";
+
+
+/**
+ *
+ * You should **never** set a default `authentication` when you are in a server side environment where you may be handling requests for many different authenticated users.
+ *
+ * @param options The default options to pass with every request. Existing default will be overwritten.
+ */
 
 interface IJobOptions extends IRequestOptions {
   id?: string;
@@ -9,7 +19,7 @@ interface IJobOptions extends IRequestOptions {
   params?: any;
   startMonitoring?: boolean;
   pollingRate?: number;
-  token?: string;
+  authentication?: string;
 }
 type ISubmitJobOptions = Omit<IJobOptions, "id">;
 
@@ -50,6 +60,7 @@ export class Job {
     return !!this.setIntervalHandler;
   }
 
+
   getJobInfo() {
     return request(this.jobUrl, {
       authentication: this.authentication
@@ -60,6 +71,7 @@ export class Job {
     return new Job(options);
   }
 
+  //submits a new job
   static submitJob(requestOptions: ISubmitJobOptions) {
     const { url, params, startMonitoring, pollingRate, authentication } =
     requestOptions;
@@ -77,6 +89,7 @@ export class Job {
     );
   }
 
+  //this is an internal polling event listener for every status that is emitted from the REST endpoint
   private executePoll = async () => {
     let result;
     try {
@@ -151,6 +164,7 @@ export class Job {
     this.emitter.off(eventName, handler);
   }
 
+  //will only make a request for on paramName as a string
   async getResults(result: string) {
     return this.waitForJobCompletion().then(jobInfo => {
       return request(this.jobUrl + "/" + jobInfo.results[result].paramUrl, {
@@ -176,6 +190,7 @@ export class Job {
     return new Job(JSON.parse(serializeString));
   }
 
+  //checks to see if the jobStatus is completed, if not, it will either resolve with the results or reject
   async waitForJobCompletion() {
     const jobInfo = await this.getJobInfo();
     if (jobInfo.jobStatus === "esriJobSucceeded") {
@@ -212,6 +227,7 @@ export class Job {
     });
   }
 
+  //gets all the results from the returned results array, will do a promise.all of the requests and then ensure that they are ordered by on the results array index
   async getAllResults() {
     return this.waitForJobCompletion().then(jobInfo => {
       const keys = Object.keys(jobInfo.results);
@@ -233,6 +249,8 @@ export class Job {
     });
   };
 
+
+  //cancels the job, will return an object with message array stating the request was submitted and cancel was complete
   cancelJob() {
     return request(this.jobUrl + "/cancel", {
       authentication: this.authentication,
@@ -243,13 +261,13 @@ export class Job {
     });
   }
 
+  //interal monitoring if the user specifies startMonitoring: false, we need to check the status to see when the results are returned
   private startInternalEventMonitoring() {
     if (!this.setIntervalHandler) {
       this.setIntervalHandler = setInterval(this.executePoll, this.pollingRate);
     }
   }
 
-  //interal monitoring if the user specifies startMonitoring: false, we need to check the status to see when the results are returned
   private stopInternalEventMonitoring() {
     if (this.setIntervalHandler && !this.didUserEnableMonitoring) {
       clearTimeout(this.setIntervalHandler);
