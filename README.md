@@ -84,16 +84,18 @@ For a specific package
 #### How to add a new package
 - In `/packages`, create a new folder with your desired new package name
 - Each package will have it’s own local `package.json` and tsconfig.json if using typescript
-- Create a folder in your new package called src in which your code will be defined
-- After creating your package, go to the root `package.json`, under workspaces array add the title of your package
+- Create a folder in your new package called `src` in which your code will be defined
+- After creating your custom package, go to the root `package.json`, under the property `workspaces`, add the title of your custom package
 - Run `npm build:esm`
+- Check in the root `node_modules/@esri` that your new custom package has been added
 - Go into `/demos`, create a new folder and title what you want to call your demo
-- Add a local package.json in which you will add your new package as a `dependency, name, version, - description, license, type, main, scripts, and author`. Feel free to add any extra properties as well. 
+- Add a local `package.json` in your new demo folder. Add your custom package name as a dependency. Be sure to have at least these properties in your `package.json`, `dependency, name, version, - description, license, type, main, scripts, and author`.
 - Add a `.gitignore` in the root level of your demo folder that ignore `node_modules`. Be sure to ignore an `env` file as well if your demo is using any personal keys or tokens.
-- Run `Npm install` within the `demos` level, also be sure to create a start script that refers to `node ../../scripts/run-demo-server.js` in demo `package.json`x`.
-- In your index file, import any methods or variables from your new package as well as another package in the `/packages` repo
-- To run your demo be sure that you running your start script in your demo directory and run `npm run start`
-- Add a readme describing your demo
+- Run `mpm install` within the `/demos` directory and make sure your demo folder has it's own local node_modules.
+- In your `demo/index`, import your custom package.
+- To run your demo be sure to have script that has a property `start` in your demo directory and your script is pointing to the correct index file. 
+- Run `npm run start` while being in your `/demos/custom-demo` directory.
+- Add a readme describing your demo.
 
 ### Issues
 
